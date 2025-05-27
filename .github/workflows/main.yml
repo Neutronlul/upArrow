@@ -23,4 +23,4 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ vars.DOCKER_USERNAME }}/${{ github.event.repository.name.toLowerCase() }}:latest
+          tags: ${{ vars.DOCKER_USERNAME }}/${{ vars.BUILDX_REPO_NAME }}:latest
