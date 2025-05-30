@@ -1,42 +1,43 @@
-# Stage 1: Build
-FROM ubuntu:20.04 AS build
+# Stage 1: Build stage
+FROM ubuntu:24.04 AS build
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     git \
+    curl \
     libcurl4-openssl-dev \
     libssl-dev \
-    rapidjson-dev \
-    && rm -rf /var/lib/apt/lists/*
+    rapidjson-dev
+
+# Install DPP from source
+RUN git clone https://github.com/brainboxdotcc/DPP.git /dpp && \
+    mkdir /dpp/build && \
+    cd /dpp/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && \
+    make install
 
 # Set working directory
 WORKDIR /app
 
-# Copy source code
+# Copy source
 COPY upArrow.cpp .
 
-# Compile the application
+# Compile
 RUN g++ -std=c++20 -g upArrow.cpp -o upArrow \
     -I/usr/include/rapidjson \
-    -lcurl \
-    -lssl \
-    -lcrypto
+    -ldpp -lcurl -lssl -lcrypto
 
-# Stage 2: Runtime
-FROM ubuntu:20.04
+# Stage 2: Minimal runtime
+FROM ubuntu:24.04
 
-# Install runtime dependencies
 RUN apt-get update && apt-get install -y \
-    libcurl4-openssl-dev \
-    libssl-dev \
+    libcurl4 \
+    libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the compiled binary
 COPY --from=build /app/upArrow /upArrow
 
-# Set the entry point
-CMD ["/upArrow"]:contentReference[oaicite:83]{index=83}
+CMD ["/upArrow"]
