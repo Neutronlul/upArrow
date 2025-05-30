@@ -1,46 +1,41 @@
-# Stage 1: Build stage
+# ----------- Stage 1: Build ------------
 FROM ubuntu:22.04 AS build
 
-# Install dependencies for build
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install base dev tools and libraries
 RUN apt-get update && apt-get install -y \
     build-essential \
-    g++ \
     cmake \
     git \
-    libcurl4-openssl-dev \
-    rapidjson-dev \
+    curl \
     libssl-dev \
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+    libcurl4-openssl-dev \
+    rapidjson-dev
 
-WORKDIR /app
+# Build libDPP
+WORKDIR /deps
+RUN git clone --branch master https://github.com/brainboxdotcc/DPP.git
+WORKDIR /deps/DPP
+RUN mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(nproc) && make install
 
-# Clone dpp library (official repo)
-RUN git clone --depth=1 https://github.com/brainboxdotcc/DPP.git
-
-# Build and install dpp library
-WORKDIR /app/DPP/build
-RUN cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
-RUN make -j$(nproc)
-RUN make install
-
-# Copy your source code
+# App source
 WORKDIR /app
 COPY upArrow.cpp .
 
-# Compile your app, link curl, dpp, and ssl libs
-RUN g++ -std=c++20 -g upArrow.cpp -o upArrow -lcurl -ldpp -lssl -lcrypto -pthread
+# Compile your app
+RUN g++ -std=c++20 -g -o upArrow upArrow.cpp \
+    -ldpp -lcurl -lssl -lcrypto
 
-# Stage 2: Runtime stage
+# ----------- Stage 2: Runtime ------------
 FROM ubuntu:22.04
 
-# Install runtime dependencies (curl, ssl)
+# Install runtime dependencies only
 RUN apt-get update && apt-get install -y \
-    libcurl4-openssl-dev \
     libssl3 \
+    libcurl4 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy binary from build stage
 COPY --from=build /app/upArrow /usr/local/bin/upArrow
 
 CMD ["/usr/local/bin/upArrow"]
