@@ -1,10 +1,9 @@
 #include <iostream>
 #include <cstdlib>
-
-//using namespace std;
-
-//const std::string BOT_TOKEN = "Testing";
-const std::string url = envVarFetcher("BOT_TOKEN");
+#include <curl/curl.h>
+#include <dpp/dpp.h>
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
 
 std::string envVarFetcher(const char* name) {
     if (auto val = std::getenv(name)) {
@@ -12,23 +11,26 @@ std::string envVarFetcher(const char* name) {
     }
     throw std::runtime_error(std::string("Required environment variable not set: ") + name);
 }
-/*
+
+const std::string BOT_TOKEN = envVarFetcher("BOT_TOKEN");
+const std::string url = envVarFetcher("LLM_TOKEN");
+const std::string prePrompt = envVarFetcher("PRE_PROMPT");
+const dpp::snowflake TARGET_CHANNEL_ID = envVarFetcher("TARGET_CHANNEL_ID");
+const dpp::snowflake TARGET_USER_ID = envVarFetcher("TARGET_USER_ID");
+
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* buffer) {
     buffer->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
 
-string gAPICall(string prompt) {
+std::string gAPICall(std::string prompt) {
     CURL* curl;
     CURLcode res;
-    string response_buffer;
+    std::string response_buffer;
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
 
-    const std::string url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=AIzaSyDE-VW7_mipXsfIXDJpk8J4l22-5w08TdA";
-    //std::string prePrompt = "Respond to this in one sentence:\n";
-    std::string prePrompt = "The following is a message from a closeted gay man. Explain how its contents relates to his sexuality in one sentence.\n";
     // Set the JSON data
     const std::string json_data = R"(
         {
@@ -86,7 +88,7 @@ string gAPICall(string prompt) {
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
 
-    cout << endl << endl << response_buffer;
+    std::cout << std::endl << std::endl << response_buffer;
 
     curl_global_cleanup();
 
@@ -99,15 +101,23 @@ string gAPICall(string prompt) {
         + doc["candidates"][0]["content"]["parts"][0]["text"].GetString();
     }  
 }
-*/
+
 int main() {
+	/* Create bot cluster */
+	dpp::cluster bot(BOT_TOKEN, dpp::i_default_intents | dpp::i_message_content);
 
-    //dpp::cluster bot(BOT_TOKEN, dpp::i_default_intents | dpp::i_message_content);
-    //Test
-    std::cout << "Hello, " << url << "!" << std::endl;
+	/* Output simple log messages to stdout */
+	bot.on_log(dpp::utility::cout_logger());
 
+	bot.on_message_create([&bot](const dpp::message_create_t& event) {
+	   if (event.msg.author.id == TARGET_USER_ID/* || event.msg.author.id == TARGET_USER2*/) {
+            //gAPICall(event.msg.content);
+		  bot.message_create(dpp::message(TARGET_CHANNEL_ID, gAPICall(event.msg.content) + event.msg.get_url()));
+	   }
+	});
 
-
-
+	/* Start the bot */
+	bot.start(dpp::st_wait);
+    
     return 0;
 }
