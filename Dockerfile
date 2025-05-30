@@ -37,7 +37,7 @@ FROM ubuntu:22.04
 # Install runtime dependencies (curl, ssl)
 RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
-    libssl1.1 \
+    libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy binary from build stage
