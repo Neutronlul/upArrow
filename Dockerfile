@@ -9,6 +9,12 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Install D++ library dependencies first
+RUN apt-get update && apt-get install -y \
+    libopus0 \
+    libsodium23 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install D++ library
 RUN wget -O dpp.deb https://dl.dpp.dev/ && \
     dpkg -i dpp.deb && \
@@ -26,10 +32,12 @@ RUN g++ -o upArrow upArrow.cpp -ldpp -lcurl
 # Stage 2: Runtime stage
 FROM ubuntu:latest
 
-# Install runtime dependencies for D++ if needed
+# Install runtime dependencies for D++
 RUN apt-get update && apt-get install -y \
     libssl3 \
     libcurl4 \
+    libopus0 \
+    libsodium23 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the binary from the build stage
