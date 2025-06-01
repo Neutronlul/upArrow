@@ -4,8 +4,8 @@ FROM ubuntu:latest AS build
 # Install build-essential for compiling C++ code
 RUN apt-get update && apt-get install -y build-essential
 
-# Curl
-RUN apt-get update && apt-get install -y Curl
+# Install Curl
+RUN apt-get update && apt-get install -y curl
 
 # Set the working directory
 WORKDIR /app
