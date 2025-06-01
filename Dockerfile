@@ -22,10 +22,10 @@ WORKDIR /app
 COPY upArrow.cpp .
 
 # Compile the C++ code statically to ensure it doesn't depend on runtime libraries
-RUN g++ -o upArrow upArrow.cpp -static -lcurl -ldpp
+RUN g++ -o upArrow upArrow.cpp -lcurl -ldpp
 
 # Stage 2: Runtime stage
-FROM scratch
+FROM ubuntu:latest
 
 # Copy the static binary from the build stage
 COPY --from=build /app/upArrow /upArrow
