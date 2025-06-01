@@ -42,6 +42,7 @@ COPY --from=build /app/upArrow /upArrow
 
 # Copy D++ shared lib
 COPY --from=build /usr/lib/*/libdpp* /usr/local/lib/
+RUN ldconfig
 
 # Command to run the binary
 CMD ["/upArrow"]
