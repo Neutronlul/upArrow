@@ -9,7 +9,14 @@ RUN apt-get update && apt-get install -y libcurl4-openssl-dev
 
 # Install D++
 RUN apt-get update && apt-get install -y wget libopus0 libopus-dev
-RUN wget -O dpp.deb https://github.com/brainboxdotcc/DPP/releases/download/v10.1.2/libdpp-10.1.2-linux-rpi-arm64.deb
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+        wget -O dpp.deb https://github.com/brainboxdotcc/DPP/releases/download/v10.1.2/libdpp-10.1.2-linux-x64.deb; \
+    elif [ "$ARCH" = "arm64" ]; then \
+        wget -O dpp.deb https://github.com/brainboxdotcc/DPP/releases/download/v10.1.2/libdpp-10.1.2-linux-rpi-arm64.deb; \
+    else \
+        echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi
 RUN apt-get install -y ./dpp.deb
 
 # Install rapidJson
