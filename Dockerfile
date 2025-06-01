@@ -35,14 +35,22 @@ RUN g++ -o upArrow upArrow.cpp -lcurl -ldpp
 FROM ubuntu:latest
 
 # Add runtime dependencies
-RUN apt-get update && apt-get install -y libcurl4
+RUN apt-get update && apt-get install -y libcurl4 libopus0
 
 # Copy the binary from the build stage
 COPY --from=build /app/upArrow /upArrow
 
-# Copy D++ shared lib
-COPY --from=build /usr/lib/*/libdpp* /usr/local/lib/
-RUN ldconfig
+# Install D++ in runtime stage (simpler approach)
+RUN apt-get update && apt-get install -y wget
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+        wget -O dpp.deb https://github.com/brainboxdotcc/DPP/releases/download/v10.1.2/libdpp-10.1.2-linux-x64.deb; \
+    elif [ "$ARCH" = "arm64" ]; then \
+        wget -O dpp.deb https://github.com/brainboxdotcc/DPP/releases/download/v10.1.2/libdpp-10.1.2-linux-rpi-arm64.deb; \
+    else \
+        echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi
+RUN apt-get install -y ./dpp.deb && rm dpp.deb
 
 # Command to run the binary
 CMD ["/upArrow"]
