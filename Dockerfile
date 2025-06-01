@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y build-essential
 RUN apt-get update && apt-get install -y libcurl4-openssl-dev
 
 # Install D++
-RUN apt-get update && apt-get install -y wget libopus0 libopus-dev
-RUN wget -O dpp.deb https://dl.dpp.dev/
+RUN apt-get update && apt-get install -y wget libopus0
+RUN wget -O dpp.deb https://github.com/brainboxdotcc/DPP/releases/download/v10.1.2/libdpp-10.1.2-linux-rpi-arm64.deb
 RUN apt-get install -y ./dpp.deb
 
 # Install rapidJson
