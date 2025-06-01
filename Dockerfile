@@ -40,5 +40,8 @@ RUN apt-get update && apt-get install -y libcurl4
 # Copy the binary from the build stage
 COPY --from=build /app/upArrow /upArrow
 
+# Copy D++ shared lib
+COPY --from=build /usr/lib/*/libdpp* /usr/local/lib/
+
 # Command to run the binary
 CMD ["/upArrow"]
