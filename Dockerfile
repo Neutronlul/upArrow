@@ -12,6 +12,9 @@ RUN apt update && apt install -y wget
 RUN wget -O dpp.deb https://dl.dpp.dev/
 RUN apt install -y ./dpp.deb
 
+# Install rapidJson
+RUN apt-get update && apt-get install -y rapidjson
+
 # Set the working directory
 WORKDIR /app
 
