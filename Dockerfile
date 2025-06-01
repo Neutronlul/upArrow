@@ -22,7 +22,7 @@ WORKDIR /app
 COPY upArrow.cpp .
 
 # Compile the C++ code statically to ensure it doesn't depend on runtime libraries
-RUN g++ -o upArrow upArrow.cpp -static
+RUN g++ -o upArrow upArrow.cpp -static -ldpp -lcurl
 
 # Stage 2: Runtime stage
 FROM scratch
