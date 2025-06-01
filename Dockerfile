@@ -7,6 +7,11 @@ RUN apt-get update && apt-get install -y build-essential
 # Install Curl
 RUN apt-get update && apt-get install -y libcurl4-openssl-dev
 
+# Install D++
+RUN apt install wget
+RUN wget -O dpp.deb https://dl.dpp.dev/
+RUN dpkg -i dpp.deb
+
 # Set the working directory
 WORKDIR /app
 
