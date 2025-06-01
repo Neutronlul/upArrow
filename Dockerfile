@@ -8,9 +8,9 @@ RUN apt-get update && apt-get install -y build-essential
 RUN apt-get update && apt-get install -y libcurl4-openssl-dev
 
 # Install D++
-RUN apt update && apt install -y wget
+RUN apt-get update && apt-get install -y wget \ libopus0
 RUN wget -O dpp.deb https://dl.dpp.dev/
-RUN apt install -y ./dpp.deb
+RUN apt-get install -y ./dpp.deb
 
 # Install rapidJson
 RUN apt-get update && apt-get install -y rapidjson-dev
