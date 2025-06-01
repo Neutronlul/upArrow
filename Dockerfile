@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y build-essential
 RUN apt-get update && apt-get install -y libcurl4-openssl-dev
 
 # Install D++
-RUN apt-get update && apt-get install -y wget libopus0
+RUN apt-get update && apt-get install -y wget libopus0:amd64
 RUN wget -O dpp.deb https://dl.dpp.dev/
 RUN apt-get install -y ./dpp.deb
 
@@ -21,13 +21,13 @@ WORKDIR /app
 # Copy the source code into the container
 COPY upArrow.cpp .
 
-# Compile the C++ code statically to ensure it doesn't depend on runtime libraries
+# Compile the C++ code dynamically
 RUN g++ -o upArrow upArrow.cpp -lcurl -ldpp
 
 # Stage 2: Runtime stage
 FROM ubuntu:latest
 
-# Copy the static binary from the build stage
+# Copy the binary from the build stage
 COPY --from=build /app/upArrow /upArrow
 
 # Command to run the binary
