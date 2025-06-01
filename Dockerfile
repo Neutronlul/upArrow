@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y build-essential
 RUN apt-get update && apt-get install -y libcurl4-openssl-dev
 
 # Install D++
-RUN apt-get update && apt-get install -y wget \ libopus0
+RUN apt-get update && apt-get install -y wget libopus0
 RUN wget -O dpp.deb https://dl.dpp.dev/
 RUN apt-get install -y ./dpp.deb
 
