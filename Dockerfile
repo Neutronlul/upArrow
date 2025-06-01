@@ -5,7 +5,7 @@ FROM ubuntu:latest AS build
 RUN apt-get update && apt-get install -y build-essential
 
 # Install Curl
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y libcurl4-openssl-dev
 
 # Set the working directory
 WORKDIR /app
