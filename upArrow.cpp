@@ -93,12 +93,12 @@ std::string gAPICall(std::string prompt) {
     curl_global_cleanup();
 
     if (doc.HasMember("error")) {
-        return "Error: " + doc["error"]["status"].GetString()
+        return "\"" + prompt + "\"\nError: " + doc["error"]["status"].GetString()
         + "\n" + doc["error"]["message"].GetString() + "\n";
     }
     else {
         return doc["candidates"][0]["content"]["parts"][0]["text"].GetString();
-    }  
+    }
 }
 
 int main() {
