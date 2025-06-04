@@ -110,11 +110,16 @@ int main() {
 	bot.on_log(dpp::utility::cout_logger());
 
 	bot.on_message_create([&bot](const dpp::message_create_t& event) {
-	   if (event.msg.author.id == TARGET_USER_ID/* || event.msg.author.id == TARGET_USER2*/) {
-            //gAPICall(event.msg.content);
+	   if (event.msg.author.id == TARGET_USER_ID) {
 		  bot.message_create(dpp::message(TARGET_CHANNEL_ID, gAPICall(event.msg.content) + event.msg.get_url()));
 	   }
 	});
+
+    bot.on_message_create([&bot](const dpp::message_create_t& event) {
+        if (event.msg.content.find("^") != std::string::npos && !event.msg.author.is_bot()) {
+            bot.message_create(dpp::message(event.msg.channel_id, "^"));
+        }
+    });
 
 	/* Start the bot */
 	bot.start(dpp::st_wait);
