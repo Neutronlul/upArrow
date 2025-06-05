@@ -118,8 +118,8 @@ int main() {
     bot.on_message_create([&bot](const dpp::message_create_t& event) {
         if (event.msg.content.find("^") != std::string::npos && !event.msg.author.is_bot()) {
             bot.message_create(dpp::message(event.msg.channel_id, "^"));
-            for (const auto& emoji : { ":REGIONAL_INDICATOR_T:", ":REGIONAL_INDICATOR_H:", ":REGIONAL_INDICATOR_I:", ":REGIONAL_INDICATOR_S:" }) {
-                bot.message_add_reaction(dpp::message(event.msg), emoji);
+            for (const auto& emoji : { "🇹", "🇭", "🇮", "🇸" }) {
+                bot.message_add_reaction(event.msg, emoji);
             }
         }
     });
