@@ -102,6 +102,16 @@ std::string gAPICall(std::string prompt) {
     }  
 }
 
+void addManyReactions(const std::vector<std::string>& emoji, dpp::cluster& bot, const dpp::message& message, int index = 0) {
+    if (index < emoji.size()) {
+        bot.message_add_reaction(message, emoji[index], [emoji, &bot, message, index](const dpp::confirmation_callback_t& callback) {
+            if (!callback.is_error()) {
+                addManyReactions(emoji, bot, message, index + 1);
+            }
+        });
+    }
+}
+
 int main() {
 	/* Create bot cluster */
 	dpp::cluster bot(BOT_TOKEN, dpp::i_default_intents | dpp::i_message_content);
@@ -118,9 +128,7 @@ int main() {
     bot.on_message_create([&bot](const dpp::message_create_t& event) {
         if (event.msg.content.find("^") != std::string::npos && !event.msg.author.is_bot()) {
             bot.message_create(dpp::message(event.msg.channel_id, "^"));
-            for (const std::string& emoji : { "🇹", "🇭", "🇮", "🇸" }) {
-                bot.message_add_reaction(event.msg, emoji);
-            }
+            addManyReactions({"🇹","🇭","🇮","🇸"}, bot, event.msg);
         }
     });
 
