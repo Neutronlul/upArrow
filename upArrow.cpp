@@ -120,7 +120,7 @@ int main() {
 	bot.on_log(dpp::utility::cout_logger());
 
 	bot.on_message_create([&bot](const dpp::message_create_t& event) {
-	   if (event.msg.author.id == TARGET_USER_ID) {
+	   if (event.msg.author.id == TARGET_USER_ID && !event.msg.content.empty()) {
 		  bot.message_create(dpp::message(TARGET_CHANNEL_ID, gAPICall(event.msg.content) + event.msg.get_url()));
 	   }
 	});
